@@ -26,7 +26,7 @@ for (let i = 0; i < 10; i++) {
         MessageAttributes: {},
         MessageBody: `{ customerId: ${String(i)} }`,
         QueueUrl: "https://sqs.us-east-1.amazonaws.com/103346953322/customerId.fifo",
-        MessageGroupId: "CustomerId",
+        MessageGroupId: String(i), // NOTE: This greatly affects how messages are viewed with the visiblity timeout feature.
         MessageDeduplicationId: String(i)
     };
     enqueue(params);
