@@ -13,7 +13,8 @@ const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 const numberMessageToRead = 3; // The number of messages to read in one batch (max is 10).
 const visibilityTimeout = 5;   // The number of seconds we have to process these messages before we can read these messages again from the queue.
-const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customerId.fifo";
+//const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customerId.fifo";
+const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customer";
 
 var params = {
     AttributeNames: ["SentTimestamp"],
