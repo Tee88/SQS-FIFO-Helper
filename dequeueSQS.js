@@ -12,7 +12,7 @@ AWS.config.update({region: 'us-east-1'});
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 const numberMessageToRead = 3; // The number of messages to read in one batch (max is 10).
-const visibilityTimeout = 5;   // The number of seconds we have to process these messages before we can read these messages again from the queue.
+const visibilityTimeout = 10;   // The number of seconds we have to process these messages before we can read these messages again from the queue.
 //const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customerId.fifo";
 const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customer";
 
@@ -36,7 +36,7 @@ sqs.receiveMessage(params, (err, data) => {
                 console.log('Body is undefined');
             } else {
                 console.log(data.Messages[i].Body);
-                //deleteMessageWithReceiptHandle(data.Messages[i].ReceiptHandle); // Commenting this makes messages visible after the visibilityTimeout has expired;
+                deleteMessageWithReceiptHandle(data.Messages[i].ReceiptHandle); // Commenting this makes messages visible after the visibilityTimeout has expired;
             }
         }
     } else {
