@@ -149,13 +149,11 @@ function calculateInvoiceForCustomer(customerId) {
 
 connection.connect(); // Create our one and only connection to the database.
 
-truncateInvoiceTable().then(() => {
-    let promiseReaders = [];
-    for (let i = 1; i < numReaders; i++) { 
-        promiseReaders.push(dequeueMessages(i));
-    }
-    Promise.all(promiseReaders).then(() => {
-        console.log('Finished');
-        connection.end(); // Kill our one and only connection to the database.
-    });    
-});
+let promiseReaders = [];
+for (let i = 1; i < numReaders; i++) { 
+    promiseReaders.push(dequeueMessages(i));
+}
+Promise.all(promiseReaders).then(() => {
+    console.log('Finished');
+    connection.end(); // Kill our one and only connection to the database.
+});    
