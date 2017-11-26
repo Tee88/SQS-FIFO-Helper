@@ -36,3 +36,19 @@ db.r3.2xlarge 3000
 db.r3.4xlarge 4000
 db.r3.8xlarge 5000
 ```
+
+# FIFO Queues Kinda Suck
+I had a hard time creating multiple readers using FIFO queues.  For whatever reason, the visiblity timeout
+prevents other readers from seeing ANY other messages in the same message group.  It feels like the 
+visibility Timeout MUST be set to zero in order to use multiple readers with FIFO queues???
+
+```
+    let params = {
+        MessageAttributes: {},
+        MessageBody: `{ "customerId": ${String(i)} }`,
+        QueueUrl: queueURL, 
+        MessageGroupId: String(i), // NOTE: This greatly affects how messages are viewed with the visiblity timeout feature.
+        MessageGroupId: "CustomerId",
+        MessageDeduplicationId: String(i)
+    };
+```
