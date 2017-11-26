@@ -57,7 +57,8 @@ function processMessages(data) {
         connection.connect();
         for (let i = 0; i < data.Messages.length; i++) { // Even though we want 10 messages (numberMessageToRead) we may get much less.                 
             const customer = JSON.parse(data.Messages[i].Body);
-            connection.query(`insert into invoice (customer_id, amount) values (${customer.customerId}, 13.11);`, (error, results, fields) => {
+           
+            connection.query(`insert into invoice (customer_id, amount) values (${customer.customerId}, ${calculateInvoiceForCustomer(customer.customerId)});`, (error, results, fields) => {
                 if (error) { 
                     console.log(error);
                 } else {
@@ -69,6 +70,13 @@ function processMessages(data) {
         connection.end();
         resolve('done');
     });
+}
+
+/**
+ * TODO: Implement with real data.
+ */
+function calculateInvoiceForCustomer(customerId) {
+   return customerId * 1.23;
 }
 
 /**
