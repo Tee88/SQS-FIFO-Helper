@@ -1,8 +1,8 @@
 //
-// Name: dequeueSQS2.js
+// Name: dequeueSQS.js
 // Auth: Martin Burolla
-// Date: 11/25/2017
-// Desc:
+// Date: 11/26/2017
+// Desc: Calculates and invoice for every customer in SQS.
 //
 
 'use strict';
@@ -41,7 +41,7 @@ function dequeueMessages(workerId) {
             if (err) { console.log("Receive Error", err); } 
             if (!data.Messages) {
                 console.log('EMPTY QUEUE');
-                return resolve(`done`);
+                return resolve('done');
             }
 
             console.log(`WorkerId: ${workerId} processing ${data.Messages.length} messages.`);
@@ -53,7 +53,7 @@ function dequeueMessages(workerId) {
 }
 
 /**
- * Calculates the invoice for at most 10 customers.
+ * Calculates invoices for at most 10 customers.
  */
 function processMessages(data) {
     return new Promise((resolve, reject) => {
@@ -68,7 +68,7 @@ function processMessages(data) {
 }
 
 /**
- * Processes a single customer for a specific SQS message.
+ * Calculates and invoice for a single customer.
  */
 function processCustomer(message) {
     return new Promise(resolve => {
@@ -87,7 +87,7 @@ function processCustomer(message) {
 }
 
 /**
- * Inserts a unique customerId into the invoice table.
+ * Inserts a unique customerId with an invoice amount into the invoice table.
  */
 function insertIntoDatabase(customerId, invoiceAmount) {
     return new Promise((resolve, reject) => {
@@ -127,13 +127,13 @@ function calculateInvoiceForCustomer(customerId) {
  }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// Run our workers.
+// Main
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 connection.connect(); // Create our one and only connection to the database.
 
 let promiseReaders = [];
-for (let i = 1; i < 15; i++) { 
+for (let i = 1; i < 20; i++) { 
     promiseReaders.push(dequeueMessages(i));
 }
 Promise.all(promiseReaders).then(() => {
