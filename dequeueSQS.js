@@ -13,7 +13,7 @@ AWS.config.update({region: 'us-east-1'});
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 const numberMessageToRead = 10; // The number of messages to read in one batch (max is 10).
-const visibilityTimeout = 10;   // The number of seconds we have to process these messages before we can read these messages again from the queue.
+const visibilityTimeout = 30;   // The number of seconds we have to process these messages before we can read these messages again from the queue.
 //const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customerId.fifo";
 const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customer";
 
@@ -46,7 +46,6 @@ sqs.receiveMessage(params, (err, data) => {
                 
                 connection.query(`insert into invoice (customer_id, amount) values (${jsonObject.customerId}, 13.11);`, (error, results, fields) => {
                     if (error) throw error;
-                    
                  });
                 deleteMessageWithReceiptHandle(data.Messages[i].ReceiptHandle); // Commenting this makes messages visible after the visibilityTimeout has expired;
             }
