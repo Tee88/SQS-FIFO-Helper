@@ -1,0 +1,22 @@
+{
+  "name": "sqs-helper",
+  "version": "1.0.0",
+  "description": "Helper project that uses FIFO queues.",
+  "main": "dequeueSQS.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mburolla/SQS-FIFO-Helper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mburolla/SQS-FIFO-Helper/issues"
+  },
+  "homepage": "https://github.com/mburolla/SQS-FIFO-Helper#readme",
+  "dependencies": {
+    "mysql": "^2.15.0"
+  }
+}
