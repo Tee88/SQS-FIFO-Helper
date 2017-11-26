@@ -1,14 +1,24 @@
 # SQS Helper
 Helper project that uses FIFO queues.
 
+# Getting Started
+- `enqueueSQS.js` inserts `{ customer: id}` into the SQS where id is a positive integer
+- `dequeueSQS.js` pulls messages from the queue using the `numReaders`
+- The queue behaves crappily when it is small (<1000) and even worse when there is a dozen messages
+- The dequeue script may need to be called again to fully empty the queue: `WorkerId: 12 EMPTY QUEUE`
+
 # Notes
 The VisibilityTimeout is super important.  You must understand how it works.
-
-REMEMBER: SQS LIKES BIG QUEUES AND PERFORMS WEIRDLY WITH SMALL QUEUE SIZES.
 
 http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html
 
 http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/sqs-examples-send-receive-messages.html
+
+Use long polling to search all the SQS servers and to guarentee a response:
+
+http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html
+
+`WaitTimeSeconds: 1`
 
 # DDL
 ```

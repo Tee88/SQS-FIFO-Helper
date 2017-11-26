@@ -13,7 +13,9 @@ AWS.config.update({region: 'us-east-1'});
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 const numberMessageToRead = 10; // The number of messages to read in one batch (max is 10). Even though are requesting 10 messages from a worker, we may get much less. 
-const visibilityTimeout = 30;   // The number of seconds we have to process a batch of messages before they are visible on the queue again.
+const visibilityTimeout = 30;   // The number of seconds we have to process a batch of messages before they are visible on the queue again. 30 seconds is the default.
+const waitTimeSeconds = 1;      // Anything greater than 0 enables LONG POLLING (searches ALL the SQS servers under the hood for a message).
+const numReaders = 20;          // The number of readers to run in parallel.
 const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customer"; 
 
 const params = {
@@ -21,8 +23,8 @@ const params = {
     MaxNumberOfMessages: numberMessageToRead,
     MessageAttributeNames: ["All"],
     QueueUrl: queueURL,
-    VisibilityTimeout: visibilityTimeout,  // 30 seconds is the default.
-    WaitTimeSeconds: 0
+    VisibilityTimeout: visibilityTimeout,  
+    WaitTimeSeconds: waitTimeSeconds 
 };
 
 const connection = mysql.createConnection({ // Our one and only database connection shared with all the writers.
@@ -40,7 +42,7 @@ function dequeueMessages(workerId) {
         sqs.receiveMessage(params, (err, data) => {
             if (err) { console.log("Receive Error", err); } 
             if (!data.Messages) {
-                console.log('EMPTY QUEUE');
+                console.log(`WorkerId: ${workerId} EMPTY QUEUE`);
                 return resolve('done');
             }
 
@@ -135,7 +137,7 @@ function calculateInvoiceForCustomer(customerId) {
 connection.connect(); // Create our one and only connection to the database.
 
 let promiseReaders = [];
-for (let i = 1; i < 20; i++) { 
+for (let i = 1; i < numReaders; i++) { 
     promiseReaders.push(dequeueMessages(i));
 }
 Promise.all(promiseReaders).then(() => {
