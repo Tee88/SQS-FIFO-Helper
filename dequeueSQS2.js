@@ -27,38 +27,48 @@ const params = {
 };
 
 /**
- * Dequeues at most 10 messages from SQS and saves each message to a database.
+ * Dequeues at most 10 messages from SQS
  * @param {*} workerId 
  */
 function dequeueMessages(workerId) {
-    const connection = mysql.createConnection({
-        host     : 'lambda-db.civ85ykin3rg.us-east-1.rds.amazonaws.com',
-        user     : 'sa',
-        password : 'mjb3616!',
-        database : 'carDB'
-    });
-
     return new Promise(resolve => {
         sqs.receiveMessage(params, (err, data) => {
             if (err) { console.log("Receive Error", err); } 
             if (!data.Messages) 
                 return resolve(`WorkerId: ${workerId} did nothing (empty queue).`);
 
-            connection.connect();
-            for (let i = 0; i < data.Messages.length; i++) { // Even though we want 10 messages (numberMessageToRead) we may get much less.                 
-                const customer = JSON.parse(data.Messages[i].Body);
-                connection.query(`insert into invoice (customer_id, amount) values (${customer.customerId}, 13.11);`, (error, results, fields) => {
-                    if (error) { 
-                        console.log(error);
-                    } else {
-                        // Commenting this will make messages visible after the visibilityTimeout has expired!
-                        deleteMessageWithReceiptHandle(data.Messages[i].ReceiptHandle); // It's safe to delete this message from SQS.
-                    }
-                });
-            }
-            connection.end();
-            resolve(`WorkerId: ${workerId} read ${data.Messages.length} messages.`);
+            processMessages(data).then(() => {
+                resolve(`WorkerId: ${workerId} read ${data.Messages.length} messages.`);
+            });
         });
+    });
+}
+
+/**
+ * Saves at most 10 messages to the database.
+ */
+function processMessages(data) {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection({
+            host     : 'lambda-db.civ85ykin3rg.us-east-1.rds.amazonaws.com',
+            user     : 'sa',
+            password : 'mjb3616!',
+            database : 'carDB'
+        });
+        connection.connect();
+        for (let i = 0; i < data.Messages.length; i++) { // Even though we want 10 messages (numberMessageToRead) we may get much less.                 
+            const customer = JSON.parse(data.Messages[i].Body);
+            connection.query(`insert into invoice (customer_id, amount) values (${customer.customerId}, 13.11);`, (error, results, fields) => {
+                if (error) { 
+                    console.log(error);
+                } else {
+                    // Commenting this will make messages visible after the visibilityTimeout has expired!
+                    deleteMessageWithReceiptHandle(data.Messages[i].ReceiptHandle); // It's safe to delete this message from SQS.
+                }
+            });
+        }
+        connection.end();
+        resolve('done');
     });
 }
 
@@ -70,9 +80,7 @@ function deleteMessageWithReceiptHandle(receiptHandle) {
 
     sqs.deleteMessage(deleteParams, (err, data) => {
         if (err) {
-            //console.log("Delete Error", err);
-        } else {
-            //console.log("Message Deleted", data);
+            console.log("Delete Error", err);
         }
     });
 }
