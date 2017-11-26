@@ -35,7 +35,7 @@ function dequeueMessages(workerId) {
         sqs.receiveMessage(params, (err, data) => {
             if (err) { console.log("Receive Error", err); } 
             if (!data.Messages) 
-                return resolve(`WorkerId: ${workerId} did nothing (empty queue).`);
+                return resolve(`WorkerId: ${workerId} did nothing (EMPTY QUEUE).`);
 
             processMessages(data).then(() => {
                 resolve(`WorkerId: ${workerId} read ${data.Messages.length} messages.`);
