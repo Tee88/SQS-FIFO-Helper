@@ -2,7 +2,7 @@
 // Name: dequeueSQS.js
 // Auth: Martin Burolla
 // Date: 11/26/2017
-// Desc: Calculates and invoice for every customer in SQS.
+// Desc: Creates an invoice for every customer in the SQS queue.
 //
 
 'use strict';
