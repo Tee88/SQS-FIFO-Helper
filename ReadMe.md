@@ -1,5 +1,5 @@
 # SQS Helper
-Helper project that uses FIFO queues.
+Helper project that uses legacy SQS queues.
 
 # Getting Started
 - `enqueueSQS.js` inserts `{ customer: id}` into the SQS where id is a positive integer
