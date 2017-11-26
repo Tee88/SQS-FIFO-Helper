@@ -14,7 +14,7 @@ const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 const numberMessageToRead = 10; // The number of messages to read in one batch (max is 10). Even though are requesting 10 messages from a worker, we may get much less. 
 const visibilityTimeout = 30;   // The number of seconds we have to process a batch of messages before they are visible on the queue again.
-const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customer"; // "https://sqs.us-east-1.amazonaws.com/103346953322/customerId.fifo";
+const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customer"; 
 
 const params = {
     AttributeNames: ["SentTimestamp"],
@@ -53,7 +53,8 @@ function dequeueMessages(workerId) {
 }
 
 /**
- * Calculates invoices for at most 10 customers.
+ * Calculates invoices for at most 10 customers, saves the invoices to the database, and
+ * deletes messages from SQS.
  */
 function processMessages(data) {
     return new Promise((resolve, reject) => {
@@ -68,7 +69,8 @@ function processMessages(data) {
 }
 
 /**
- * Calculates and invoice for a single customer.
+ * Calculates one invoice for a single customer, saves the invoice to the database, and 
+ * deletes one message from SQS.
  */
 function processCustomer(message) {
     return new Promise(resolve => {
@@ -87,7 +89,7 @@ function processCustomer(message) {
 }
 
 /**
- * Inserts a unique customerId with an invoice amount into the invoice table.
+ * Inserts a unique customerId for an invoice amount into the invoice table.
  */
 function insertIntoDatabase(customerId, invoiceAmount) {
     return new Promise((resolve, reject) => {
@@ -101,7 +103,7 @@ function insertIntoDatabase(customerId, invoiceAmount) {
 
 /**
  * Removes a message from SQS.  If we do not do this, messages will be visible and available to 
- * read again by other readers after the visiblityTimeout has elapsed.
+ * read again by other readers after the visiblityTimeout (seconds) has elapsed.
  */
 function deleteMessageFromSQSWithReceiptHandle(receiptHandle) {
     return new Promise((resolve, reject) => {
