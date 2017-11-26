@@ -15,5 +15,6 @@ CREATE TABLE `invoice` (
   `invoice_id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) DEFAULT '0',
   `amount` float DEFAULT '0',
-  PRIMARY KEY (`invoice_id`)
+  PRIMARY KEY (`invoice_id`),
+  UNIQUE KEY `ix_cus` (`customer_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
