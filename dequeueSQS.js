@@ -140,5 +140,5 @@ for (let i = 1; i < 20; i++) {
 }
 Promise.all(promiseReaders).then(() => {
     console.log('Finished');
-    connection.end();
+    connection.end(); // Kill our one and only connection to the database.
 });
