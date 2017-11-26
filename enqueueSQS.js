@@ -24,10 +24,10 @@ function enqueue(params) {
     });
 }
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 100; i++) {
     let params = {
         MessageAttributes: {},
-        MessageBody: `{ customerId: ${String(i)} }`,
+        MessageBody: `{ "customerId": ${String(i)} }`,
         QueueUrl: queueURL
         //,
         //MessageGroupId: String(i), // NOTE: This greatly affects how messages are viewed with the visiblity timeout feature.
