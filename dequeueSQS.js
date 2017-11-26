@@ -103,7 +103,6 @@ function insertIntoDatabase(customerId, invoiceAmount) {
     });
 }
 
-
 /**
  * Removes all data from the invoice table.
  */
