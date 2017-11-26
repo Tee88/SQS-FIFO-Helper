@@ -21,7 +21,7 @@ http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-lo
 `WaitTimeSeconds: 1`
 
 # DDL
-- Legacy SQS queues DO NOT guarentee uniqueness.  The unique constraint on the customer id guarentees
+- Legacy SQS queues DO NOT guarentee uniqueness.  The UNIQUE KEY constraint on the customer_id guarentees
 that a duplicate invoice for a customer cannot be inserted into the table.
 
 ```
