@@ -72,9 +72,8 @@ function processMessages(data) {
 }
 
 /**
- * Removes a message from SQS.  If we do not do this,
- * messages will be visible and available to read again 
- * after the visiblityTimeout has elapsed!
+ * Removes a message from SQS.  If we do not do this, messages will be visible and available to 
+ * read again by other readers after the visiblityTimeout has elapsed!
  */
 function deleteMessageFromSQSWithReceiptHandle(receiptHandle) {
     var deleteParams = {
