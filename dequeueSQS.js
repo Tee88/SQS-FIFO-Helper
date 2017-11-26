@@ -103,6 +103,20 @@ function insertIntoDatabase(customerId, invoiceAmount) {
     });
 }
 
+
+/**
+ * Removes all data from the invoice table.
+ */
+function truncateInvoiceTable() {
+    return new Promise((resolve, reject) => {
+        const query = `truncate table invoice;`
+        connection.query(query, (error, results, fields) => {
+            if (error) { console.log(error); }
+            resolve();
+        });
+    });
+}
+
 /**
  * Removes a message from SQS.  If we do not do this, messages will be visible and available to 
  * read again by other readers after the visiblityTimeout (seconds) has elapsed.
@@ -136,11 +150,13 @@ function calculateInvoiceForCustomer(customerId) {
 
 connection.connect(); // Create our one and only connection to the database.
 
-let promiseReaders = [];
-for (let i = 1; i < numReaders; i++) { 
-    promiseReaders.push(dequeueMessages(i));
-}
-Promise.all(promiseReaders).then(() => {
-    console.log('Finished');
-    connection.end(); // Kill our one and only connection to the database.
+truncateInvoiceTable().then(() => {
+    let promiseReaders = [];
+    for (let i = 1; i < numReaders; i++) { 
+        promiseReaders.push(dequeueMessages(i));
+    }
+    Promise.all(promiseReaders).then(() => {
+        console.log('Finished');
+        connection.end(); // Kill our one and only connection to the database.
+    });    
 });
