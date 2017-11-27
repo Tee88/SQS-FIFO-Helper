@@ -8,11 +8,12 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const config = require('./config');
 AWS.config.update({region: 'us-east-1'});
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 const numMessages = 100;
-const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customer";
+const queueURL = config.queueURL;
 
 function enqueue(params) {
     sqs.sendMessage(params, (err, data) => {
