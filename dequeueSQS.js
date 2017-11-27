@@ -10,13 +10,14 @@
 const AWS = require('aws-sdk');
 const mysql = require('mysql');
 AWS.config.update({region: 'us-east-1'});
+const config = require('./config');
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 const numberMessageToRead = 10; // The number of messages to read in one batch (max is 10). Even though are requesting 10 messages from a worker, we may get much less. 
 const visibilityTimeout = 30;   // The number of seconds we have to process a batch of messages before they are visible on the queue again. 30 seconds is the default.
 const waitTimeSeconds = 1;      // Anything greater than 0 enables LONG POLLING (searches ALL the SQS servers under the hood for a message).
 const numReaders = 20;          // The number of readers to run in parallel.
-const queueURL = "https://sqs.us-east-1.amazonaws.com/103346953322/customer"; 
+const queueURL = config.queueURL;
 
 const params = {
     AttributeNames: ["SentTimestamp"],
@@ -28,10 +29,10 @@ const params = {
 };
 
 const connection = mysql.createConnection({ // Our one and only database connection shared with all the writers.
-    host     : 'lambda-db.civ85ykin3rg.us-east-1.rds.amazonaws.com',
-    user     : 'sa',
-    password : 'mjb3616!',
-    database : 'carDB'
+    host     : config.host,
+    user     : config.user,
+    password : config.password,
+    database : config.database
 });
 
 /**
